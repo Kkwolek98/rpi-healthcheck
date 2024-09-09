@@ -1,13 +1,25 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"rpi-healthcheck/healthcheck"
+	"rpi-healthcheck/scheduler"
+	"time"
 )
 
 func main() {
-	healthcheck.GetGpuTemp()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	printTemp := func() {
+		temp := healthcheck.GetGpuTemp()
+		fmt.Printf("GPU Temp: %.2f'C\n", temp)
+	}
+
+	go scheduler.RunPeriodically(ctx, time.Second, printTemp)
+
 	fmt.Println("Starting server on port 3000")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		fmt.Println("Error starting server", err)
