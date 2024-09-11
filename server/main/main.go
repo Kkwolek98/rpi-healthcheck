@@ -22,16 +22,19 @@ func main() {
 		Handler: routes,
 	}
 
-	// ctx, cancel := context.WithCancel(context.Background())
-	// defer cancel()
-	// runPeriodicalTask(ctx)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	runPeriodicalTask(ctx)
 
 	server.ListenAndServe()
 }
 
 func initializeRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("GET /api/temperature-readouts/last-week", temperaturecontroller.GetWeeklyHandler)
+	mux.HandleFunc("GET /api/temperature-readouts/live", temperaturecontroller.GetLive)
 
 	return mux
 }
@@ -40,7 +43,9 @@ func runPeriodicalTask(ctx context.Context) {
 	printTemp := func() {
 		temp := healthcheck.GetGpuTemp()
 		db.SaveTemperatureReadout(temp)
-		fmt.Println(temp)
+		str := fmt.Sprintf("%f", temp)
+		bytes := []byte(str)
+		temperaturecontroller.ConnectionManager.Broadcast(bytes)
 	}
 	go scheduler.RunPeriodically(ctx, 2*time.Second, printTemp)
 }
