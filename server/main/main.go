@@ -7,35 +7,40 @@ import (
 	"rpi-healthcheck/db"
 	"rpi-healthcheck/healthcheck"
 	"rpi-healthcheck/scheduler"
+	temperaturecontroller "rpi-healthcheck/temperature_controller"
 	"time"
 )
 
 func main() {
 	db.Init()
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
+	routes := initializeRoutes()
+
+	fmt.Println("Starting server on port 3000")
+	server := &http.Server{
+		Addr:    ":3000",
+		Handler: routes,
+	}
+
+	// ctx, cancel := context.WithCancel(context.Background())
+	// defer cancel()
+	// runPeriodicalTask(ctx)
+
+	server.ListenAndServe()
+}
+
+func initializeRoutes() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /api/temperature-readouts/last-week", temperaturecontroller.GetWeeklyHandler)
+
+	return mux
+}
+
+func runPeriodicalTask(ctx context.Context) {
 	printTemp := func() {
 		temp := healthcheck.GetGpuTemp()
 		db.SaveTemperatureReadout(temp)
 		fmt.Println(temp)
 	}
-
-	fmt.Println("Starting server on port 4000")
-	if err := http.ListenAndServe(":4000", nil); err != nil {
-		fmt.Println("Error starting server", err)
-		return
-	}
-
 	go scheduler.RunPeriodically(ctx, 2*time.Second, printTemp)
-
-	fmt.Println("getting readouts")
-
-	readouts, err := db.GetLastWeekTemperatureReadings()
-
-	if err != nil {
-		return
-	}
-
-	fmt.Println(len(readouts))
 }
