@@ -11,19 +11,31 @@ import (
 )
 
 func main() {
+	db.Init()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	printTemp := func() {
 		temp := healthcheck.GetGpuTemp()
-		fmt.Printf("GPU Temp: %.2f'C\n", temp)
+		db.SaveTemperatureReadout(temp)
+		fmt.Println(temp)
 	}
 
-	go scheduler.RunPeriodically(ctx, time.Second, printTemp)
-
-	db.Init()
-	fmt.Println("Starting server on port 3000")
-	if err := http.ListenAndServe(":3000", nil); err != nil {
+	fmt.Println("Starting server on port 4000")
+	if err := http.ListenAndServe(":4000", nil); err != nil {
 		fmt.Println("Error starting server", err)
+		return
 	}
+
+	go scheduler.RunPeriodically(ctx, 2*time.Second, printTemp)
+
+	fmt.Println("getting readouts")
+
+	readouts, err := db.GetLastWeekTemperatureReadings()
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(len(readouts))
 }

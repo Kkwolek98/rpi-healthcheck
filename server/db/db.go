@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	DB *gorm.DB
+	DB  *gorm.DB
 	err error
 )
 
@@ -20,6 +20,9 @@ func Init() {
 	if err != nil {
 		fmt.Println("Failed to connect to database: ", err)
 	}
+
+	fmt.Println("Auto migrate schemas...")
+	autoMigrateAll()
 }
 
 // Otherwise database would be generated in main folder.
@@ -30,4 +33,8 @@ func getDbPath() string {
 	dbPath := filepath.Join(dbDir, "database.db")
 
 	return dbPath
+}
+
+func autoMigrateAll() {
+	DB.AutoMigrate(&TemperatureReadout{})
 }

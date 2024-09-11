@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func GetGpuTemp() float32 {
+func GetGpuTemp() float64 {
 	cmd := exec.Command("vcgencmd", "measure_temp")
 	output, err := cmd.Output()
 	if err != nil {
@@ -17,11 +17,11 @@ func GetGpuTemp() float32 {
 	return parseVcgencmd(string(output))
 }
 
-func parseVcgencmd(cmdOutput string) float32 {
+func parseVcgencmd(cmdOutput string) float64 {
 	re := regexp.MustCompile("=|'")
 	split := re.Split(cmdOutput, -1)
 
-	parsed, _ := strconv.ParseFloat(split[1], 32)
+	parsed, _ := strconv.ParseFloat(split[1], 64)
 
-	return float32(parsed);
+	return parsed
 }
