@@ -13,6 +13,7 @@ func SaveTemperatureReadout(temp float64) {
 }
 
 func GetLastWeekTemperatureReadings() ([]TemperatureReadout, error) {
+	// TODO: average
 	var readouts []TemperatureReadout
 
 	now := time.Now()
