@@ -1,11 +1,11 @@
-<script lang="ts">
-import { useLiveReadoutsStore } from '@/store/liveReadouts';
-
-const readoutsStore = useLiveReadoutsStore()
-
-readoutsStore.startListening()
+<script setup lang="ts">
+import LiveReadout from "@/components/LiveReadout.vue";
 </script>
 
 <template>
-  Dashboard
+<div class="flex flex-col gap-4">
+  <h1 class="text-xl">Dashboard</h1>
+
+  <LiveReadout />
+</div>
 </template>
