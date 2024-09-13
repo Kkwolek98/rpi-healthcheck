@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useLiveReadoutsStore } from '@/store/liveReadouts';
+import { onBeforeMount } from 'vue';
 
 const readouts = useLiveReadoutsStore()
 
-readouts.startListening()
+onBeforeMount(() => {
+  readouts.startListening()
+})
 </script>
 
 <template>

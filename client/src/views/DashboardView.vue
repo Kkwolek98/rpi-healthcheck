@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HistoricalReadout from "@/components/HistoricalReadout.vue";
 import LiveReadout from "@/components/LiveReadout.vue";
 </script>
 
@@ -7,5 +8,6 @@ import LiveReadout from "@/components/LiveReadout.vue";
   <h1 class="text-xl">Dashboard</h1>
 
   <LiveReadout />
+  <HistoricalReadout />
 </div>
 </template>
