@@ -41,7 +41,5 @@ const chartData = computed(() => {
 </script>
 
 <template>
-  <div class="h-32">
     <VueApexCharts type="bar" :options="chartData.options" :series="chartData.series" height="400px"/>
-  </div>
 </template>

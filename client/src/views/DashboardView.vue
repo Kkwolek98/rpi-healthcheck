@@ -7,7 +7,7 @@ import LiveReadout from "@/components/LiveReadout.vue";
 <div class="flex flex-col gap-4">
   <h1 class="text-xl">Dashboard</h1>
 
-  <LiveReadout />
+  <LiveReadout class="shadow"/>
   <HistoricalReadout />
 </div>
 </template>
