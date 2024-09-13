@@ -14,7 +14,7 @@ import (
 func main() {
 	db.Init()
 
-	routes := initializeRoutes()
+	routes := enableCORS(initializeRoutes())
 
 	fmt.Println("Starting server on port 3000")
 	server := &http.Server{
@@ -48,4 +48,18 @@ func runPeriodicalTask(ctx context.Context) {
 		temperaturecontroller.ConnectionManager.Broadcast(bytes)
 	}
 	go scheduler.RunPeriodically(ctx, 2*time.Second, printTemp)
+}
+
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
